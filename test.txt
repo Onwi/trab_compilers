@@ -1,3 +1,18 @@
-int lol;
-{ return byte;}
-(must,coelho) []
+2/3
+0/3
+22310/332
+'c'
+'A'
+'2'
+'\'
+"meu nome\" \"luis \n 123"
+"meu nome" "eh luis"
+0231499100
+002
+luis_123_lo312
+
+/--
+!=
+==
+>=
+<=--/

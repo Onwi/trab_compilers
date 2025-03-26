@@ -2,7 +2,6 @@
   #include "tokens.h"
   int running = 1;
   int lineNumber = 1;
-
 %}
 
 %x COMMENT
@@ -19,17 +18,28 @@ while   { return KW_WHILE; }
 read    { return KW_READ; }
 print   { return KW_PRINT; }
 return  { return KW_RETURN; }
-[,;:()\[\]{}=+\-*/%<>&|~]    { return yytext[0]; }
-[0-9]*  { return LIT_INT; }
 
-[a-zA-Z]+ { return TK_IDENTIFIER; }
+[0-9]+  { return LIT_INT; }
+[0-9]+[/][0-9]+ { return LIT_REAL; }
+
+[\'].[\'] { return LIT_CHAR; }
+\"[^\"]*(\\\"[^\"]*)*\" { return LIT_STRING; }
+
+[,;:()\[\]{}=+\-*/%<>&|~]    { return yytext[0]; }
+[a-zA-Z_]+[a-zA-Z_0-9]* { return TK_IDENTIFIER; }
+
+"=="    { return OPERATOR_EQ; }
+"!="    { return OPERATOR_DIF; }
+"<="    { return OPERATOR_LE; }
+">="    { return OPERATOR_GE; }
+
 [ \t]
 "\n"    { ++lineNumber; }
 "//".*
-"/*"    { BEGIN(COMMENT); }
+"/--"    { BEGIN(COMMENT); }
 .
 
-<COMMENT>"*/" { BEGIN(INITIAL); }
+<COMMENT>"--/" { BEGIN(INITIAL); }
 <COMMENT>"\n" { ++lineNumber; }
 <COMMENT>.
 
@@ -92,16 +102,16 @@ int main(int argc, char **argv) {
         printf("lit string fround\n");
         break;
       case OPERATOR_LE:
-        printf("error token fround\n");
+        printf("le operator fround\n");
         break;
       case OPERATOR_GE:
-        printf("error token fround\n");
+        printf("ge operator fround\n");
         break;
       case OPERATOR_EQ:
-        printf("error token fround\n");
+        printf("eq operator fround\n");
         break;
       case OPERATOR_DIF:
-        printf("error token fround\n");
+        printf("diff operator fround\n");
         break;
       case TOKEN_ERROR:
         printf("error token fround\n");
