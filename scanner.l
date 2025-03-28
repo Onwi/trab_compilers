@@ -1,9 +1,14 @@
 %{
   #include "tokens.h"
+  #include "symbols.cpp"
   int running = 1;
   int lineNumber = 1;
+  int getLineNumber(void);
+  int isRunning(void);
 %}
 
+%option nounput
+%option noinput
 %x COMMENT
 
 %%
@@ -19,14 +24,14 @@ read    { return KW_READ; }
 print   { return KW_PRINT; }
 return  { return KW_RETURN; }
 
-[0-9]+  { return LIT_INT; }
-[0-9]+[/][0-9]+ { return LIT_REAL; }
+[0-9]+  { insert(4, yytext); return LIT_INT; }
+[0-9]+[/][0-9]+ { insert(5, yytext); return LIT_REAL; }
 
-[\'].[\'] { return LIT_CHAR; }
-\"[^\"]*(\\\"[^\"]*)*\" { return LIT_STRING; }
+[\'].[\'] { insert(2, yytext); return LIT_CHAR; }
+\"[^\"]*(\\\"[^\"]*)*\" { insert(3, yytext); return LIT_STRING; }
 
 [,;:()\[\]{}=+\-*/%<>&|~]    { return yytext[0]; }
-[a-zA-Z_]+[a-zA-Z_0-9]* { return TK_IDENTIFIER; }
+[a-zA-Z_]+[a-zA-Z_0-9]* { insert(1, yytext); return TK_IDENTIFIER; }
 
 "=="    { return OPERATOR_EQ; }
 "!="    { return OPERATOR_DIF; }
@@ -34,7 +39,7 @@ return  { return KW_RETURN; }
 ">="    { return OPERATOR_GE; }
 
 [ \t]
-"\n"    { ++lineNumber; }
+"\n"    {  ++lineNumber; }
 "//".*
 "/--"    { BEGIN(COMMENT); }
 .
@@ -45,85 +50,17 @@ return  { return KW_RETURN; }
 
 %%
 
-int main(int argc, char **argv) { 
-  if (argc < 2) {
-    fprintf(stderr, "Call: ./a.out file_name\n");
-    // exit(1);
-  }
-  yyin = fopen(argv[1], "r");
-
-  int token;
-  while (running) {
-    token = yylex();
-    switch (token) {
-      case KW_BYTE: 
-        printf("kw byte found\n");
-        break;
-      case KW_INT: 
-        printf("kew int found\n");
-        break;
-      case KW_REAL: 
-        printf("kew real found\n");
-        break;
-      case KW_IF: 
-        printf("kew if found\n");
-        break;
-      case KW_ELSE: 
-        printf("kew else found\n");
-        break;
-      case KW_DO: 
-        printf("kew do found\n");
-        break;
-      case KW_WHILE: 
-        printf("kew while found\n");
-        break;
-      case KW_READ: 
-        printf("kew read found\n");
-        break;
-      case KW_PRINT: 
-        printf("kew print found\n");
-        break;
-      case KW_RETURN: 
-        printf("kw return found\n");
-        break;
-      case TK_IDENTIFIER: 
-        printf("tk indendifier found\n");
-        break;
-       case LIT_INT: 
-        printf("lit int found\n");
-        break;
-       case LIT_CHAR: 
-        printf("lit char found\n");
-        break;
-       case LIT_REAL: 
-        printf("lit real found\n");
-        break;
-      case LIT_STRING:
-        printf("lit string fround\n");
-        break;
-      case OPERATOR_LE:
-        printf("le operator fround\n");
-        break;
-      case OPERATOR_GE:
-        printf("ge operator fround\n");
-        break;
-      case OPERATOR_EQ:
-        printf("eq operator fround\n");
-        break;
-      case OPERATOR_DIF:
-        printf("diff operator fround\n");
-        break;
-      case TOKEN_ERROR:
-        printf("error token fround\n");
-        break;
-      default:
-        printf("found symbol: %c\n", token);
-    }
-  }
-  exit(0);
-}
+#include "main.cpp"
 
 int yywrap() {
   running = 0;
   return 1;
+}
+
+int getLineNumber(void) {
+  return lineNumber;
+}
+
+int isRunning(void) {
+  return running;
 }
