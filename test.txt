@@ -6,11 +6,15 @@ my12Var
 1/3
 'c'
 "meu nome"
-
-print
+~
+$
+;
+()
 
 /--
 !=
 ==
 >=
 <=--/
+
+print

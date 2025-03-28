@@ -5,6 +5,7 @@
   int lineNumber = 1;
   int getLineNumber(void);
   int isRunning(void);
+  void initMe(void);
 %}
 
 %option nounput
@@ -24,11 +25,10 @@ read    { return KW_READ; }
 print   { return KW_PRINT; }
 return  { return KW_RETURN; }
 
-[0-9]+  { insert(4, yytext); return LIT_INT; }
-[0-9]+[/][0-9]+ { insert(5, yytext); return LIT_REAL; }
-
 [\'].[\'] { insert(2, yytext); return LIT_CHAR; }
 \"[^\"]*(\\\"[^\"]*)*\" { insert(3, yytext); return LIT_STRING; }
+[0-9]+  { insert(4, yytext); return LIT_INT; }
+[0-9]+[/][0-9]+ { insert(5, yytext); return LIT_REAL; }
 
 [,;:()\[\]{}=+\-*/%<>&|~]    { return yytext[0]; }
 [a-zA-Z_]+[a-zA-Z_0-9]* { insert(1, yytext); return TK_IDENTIFIER; }
@@ -39,7 +39,7 @@ return  { return KW_RETURN; }
 ">="    { return OPERATOR_GE; }
 
 [ \t]
-"\n"    {  ++lineNumber; }
+\n    {  ++lineNumber; }
 "//".*
 "/--"    { BEGIN(COMMENT); }
 .
@@ -49,8 +49,6 @@ return  { return KW_RETURN; }
 <COMMENT>.
 
 %%
-
-#include "main.cpp"
 
 int yywrap() {
   running = 0;
@@ -63,4 +61,8 @@ int getLineNumber(void) {
 
 int isRunning(void) {
   return running;
+}
+
+void initMe(void) {
+
 }
