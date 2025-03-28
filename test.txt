@@ -1,15 +1,13 @@
-2/3
-0/3
-22310/332
+luis12
+lol
+myVar
+my12Var
+132
+1/3
 'c'
-'A'
-'2'
-'\'
-"meu nome\" \"luis \n 123"
-"meu nome" "eh luis"
-0231499100
-002
-luis_123_lo312
+"meu nome"
+
+print
 
 /--
 !=
