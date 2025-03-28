@@ -21,7 +21,7 @@ Symbol *insert(int type, std::string text) {
   return newSymbol;
 }
 
-void printSymbolTable() {
+void printSymbolsTable() {
   for (auto s : symbolTable) {
     std::cout << "Symbol[" << s.second->type << "," << s.second->text << "]" << std::endl;
   }

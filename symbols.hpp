@@ -6,4 +6,4 @@ typedef struct SYMBOL {
 } Symbol;
 
 Symbol *insert(int type, std::string text);
-void printSymbolTable();
+void printSymbolsTable();
