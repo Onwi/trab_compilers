@@ -1,0 +1,200 @@
+%{
+#include <stdio.h>
+#include <string>
+
+#include "symbols.hpp"
+
+using namespace std;
+
+extern int lineNumber;
+
+int yylex();
+void yyerror(string msg);
+int getLineNumber();
+
+%}
+
+%token KW_BYTE
+%token KW_INT
+%token KW_REAL
+
+%token KW_IF
+%token KW_ELSE
+%token KW_DO
+%token KW_WHILE
+%token KW_READ
+%token KW_PRINT
+%token KW_RETURN
+
+%token OPERATOR_LE
+%token OPERATOR_GE
+%token OPERATOR_EQ
+%token OPERATOR_DIF
+
+%token TK_IDENTIFIER
+
+%token LIT_INT
+%token LIT_CHAR
+%token LIT_REAL
+%token LIT_STRING
+%token TOKEN_ERROR
+
+%left '+' '-' 
+%left '*' '/'
+%left '|' '&' '~'
+%left '(' ')'
+%left OPERATOR_EQ OPERATOR_DIF
+%left '<' '>' OPERATOR_GE OPERATOR_LE
+%nonassoc KW_ELSE
+%nonassoc LOWER_THAN_ELSE
+
+%%
+
+program: decl
+       ;
+
+decl: dec decl
+    |
+    ;
+
+dec: variables 
+   | arrays 
+   | functions 
+   | command
+   ;
+
+variables: KW_INT TK_IDENTIFIER '=' LIT_CHAR ';'        //{ insert(SYMBOL_VAR_INT, $2); }
+      | KW_INT TK_IDENTIFIER '=' LIT_INT ';'            //{ insert(SYMBOL_VAR_INT, $2); }
+      | KW_BYTE TK_IDENTIFIER '=' LIT_CHAR ';'          //{ insert(SYMBOL_VAR_BYTE, $2); }
+      | KW_BYTE TK_IDENTIFIER '=' LIT_INT ';'           //{ insert(SYMBOL_VAR_BYTE, $2); }
+      | KW_REAL TK_IDENTIFIER '=' LIT_REAL ';'          //{ insert(SYMBOL_VAR_REAL, $2); }
+      ;
+
+// *********************************************************************
+
+arrays: KW_INT TK_IDENTIFIER '[' expr ']' '=' listElements ';'          //{ insert(SYMBOL_ARRAY_INT, $2); }
+      | KW_INT TK_IDENTIFIER '[' expr ']' ';'                           //{ insert(SYMBOL_ARRAY_INT, $2); }
+      | KW_REAL TK_IDENTIFIER '[' expr ']' '=' realElements ';'         //{ insert(SYMBOL_ARRAY_REAL, $2); }
+      | KW_REAL TK_IDENTIFIER '[' expr ']' ';'                          //{ insert(SYMBOL_ARRAY_REAL, $2); }
+      | KW_BYTE TK_IDENTIFIER '[' expr ']' '=' listElements ';'        // { insert(SYMBOL_ARRAY_BYTE, $2); }
+      | KW_BYTE TK_IDENTIFIER '[' expr ']' ';'                          //{ insert(SYMBOL_ARRAY_BYTE, $2); }
+        ;
+
+listElements: elementsTypes
+        | elementsTypes ',' listElements
+        ;
+
+elementsTypes: LIT_CHAR
+             | LIT_INT
+             ;
+
+realElements: LIT_REAL
+        | LIT_REAL ',' realElements
+        ;
+
+// *********************************************************************
+
+functions: KW_INT TK_IDENTIFIER '('paramsList')' commandBlock // //{ insert(SYMBOL_FUNC_INT, $2); }
+      |KW_REAL TK_IDENTIFIER '('paramsList')' commandBlock     //{ insert(SYMBOL_FUNC_REAL, $2); }
+      |KW_BYTE TK_IDENTIFIER '('paramsList')' commandBlock     //{ insert(SYMBOL_FUNC_BYTE, $2); }
+      ;
+
+paramsList:
+        | paramsListEmpty
+        ;
+
+paramsListEmpty: paramElement
+        | paramElement ',' paramsListEmpty
+        ;
+
+paramElement: KW_INT TK_IDENTIFIER
+        | KW_BYTE TK_IDENTIFIER
+        | KW_REAL TK_IDENTIFIER
+        ;
+
+
+// *********************************************************************
+// commands
+commandBlock: '{' commandList '}'
+        ;
+
+commandList:
+       | command commandList
+       ;
+
+
+command: TK_IDENTIFIER '=' expr ';'
+    | TK_IDENTIFIER'['expr']' '=' expr ';'
+    | KW_RETURN expr';'
+    | KW_READ TK_IDENTIFIER';'
+    | KW_IF '('expr')' if_blocok %prec LOWER_THAN_ELSE
+    | KW_IF '('expr')' if_blocok KW_ELSE if_blocok
+    | KW_WHILE expr KW_DO commandBlock 
+    | KW_PRINT print_lst';'
+    | KW_DO if_blocok KW_WHILE expr ';'
+    | ';'
+    | commandBlock
+    ;
+
+// *********************************************************************
+
+if_blocok: commandBlock
+  ;
+
+param: params
+    | 
+    ;
+
+params: paramValue
+        | paramValue ',' params
+        ;
+
+paramValue: TK_IDENTIFIER
+        | LIT_CHAR
+        | LIT_REAL
+        | LIT_INT
+        | expr
+        ;
+
+// ******************************************************************************8
+
+function: TK_IDENTIFIER '(' param ')' 
+        ;
+
+print_lst: print_elem 
+        |print_elem print_lst
+        ;
+
+print_elem: LIT_STRING
+        | expr
+        ;
+
+expr: function 
+    | TK_IDENTIFIER'['expr']'
+    | TK_IDENTIFIER
+    | LIT_INT
+    | LIT_CHAR
+    | LIT_REAL
+    | expr '+' expr
+    | expr '-' expr
+    | expr '*' expr
+    | expr '/' expr
+    | expr '&' expr
+    | expr '|' expr
+    | expr '<' expr
+    | expr '>' expr
+    | expr OPERATOR_EQ expr
+    | expr OPERATOR_DIF expr
+    | expr OPERATOR_GE expr
+    | expr OPERATOR_LE expr
+    | expr '~' expr
+    | '('expr')'
+    ;
+
+%%
+
+void yyerror(string msg) {
+  fprintf(stderr, "syntax error at line %d !!\n", getLineNumber());
+  exit(3);
+}
+

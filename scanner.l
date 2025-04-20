@@ -1,10 +1,11 @@
 %{
-  #include "tokens.h"
-  #include "symbols.cpp"
+  #include "parser.tab.hpp"
+  #include "symbols.hpp"
   int running = 1;
   int lineNumber = 1;
   int getLineNumber(void);
   int isRunning(void);
+  void initMe(void);
 %}
 
 %option nounput
@@ -24,14 +25,13 @@ read    { return KW_READ; }
 print   { return KW_PRINT; }
 return  { return KW_RETURN; }
 
-[0-9]+  { insert(4, yytext); return LIT_INT; }
-[0-9]+[/][0-9]+ { insert(5, yytext); return LIT_REAL; }
-
-[\'].[\'] { insert(2, yytext); return LIT_CHAR; }
-\"[^\"]*(\\\"[^\"]*)*\" { insert(3, yytext); return LIT_STRING; }
+[\']\\*.[\'] { insert(SYMBOL_LIT_CHAR, yytext); return LIT_CHAR; }
+\"[^\"]*(\\\"[^\"]*)*\" { insert(SYMBOL_LIT_STRING, yytext); return LIT_STRING; }
+[0-9]+  { insert(SYMBOL_LIT_INT, yytext); return LIT_INT; }
+[0-9]+[/][0-9]+ { insert(SYMBOL_LIT_REAL, yytext); return LIT_REAL; }
 
 [,;:()\[\]{}=+\-*/%<>&|~]    { return yytext[0]; }
-[a-zA-Z_]+[a-zA-Z_0-9]* { insert(1, yytext); return TK_IDENTIFIER; }
+[a-zA-Z_]+[a-zA-Z_0-9]* { insert(SYMBOL_IDENTIFIER, yytext); return TK_IDENTIFIER; }
 
 "=="    { return OPERATOR_EQ; }
 "!="    { return OPERATOR_DIF; }
@@ -39,18 +39,16 @@ return  { return KW_RETURN; }
 ">="    { return OPERATOR_GE; }
 
 [ \t]
-"\n"    {  ++lineNumber; }
+\n    {  ++lineNumber; }
 "//".*
 "/--"    { BEGIN(COMMENT); }
-.
-
+. { return TOKEN_ERROR; }
+ 
 <COMMENT>"--/" { BEGIN(INITIAL); }
 <COMMENT>"\n" { ++lineNumber; }
 <COMMENT>.
 
 %%
-
-#include "main.cpp"
 
 int yywrap() {
   running = 0;
@@ -63,4 +61,8 @@ int getLineNumber(void) {
 
 int isRunning(void) {
   return running;
+}
+
+void initMe(void) {
+
 }
