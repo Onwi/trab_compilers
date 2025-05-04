@@ -1,7 +1,9 @@
 %{
 #include <stdio.h>
 #include <string>
+#include <iostream>
 
+#include "ast.hpp"
 #include "symbols.hpp"
 
 using namespace std;
@@ -11,8 +13,15 @@ extern int lineNumber;
 int yylex();
 void yyerror(string msg);
 int getLineNumber();
+AST* head;
+
 
 %}
+
+%union {
+  AST *ast;
+  SYMBOL *symbol;
+}
 
 %token KW_BYTE
 %token KW_INT
@@ -31,165 +40,164 @@ int getLineNumber();
 %token OPERATOR_EQ
 %token OPERATOR_DIF
 
-%token TK_IDENTIFIER
-
-%token LIT_INT
-%token LIT_CHAR
-%token LIT_REAL
-%token LIT_STRING
+%token<symbol> TK_IDENTIFIER
+%token<symbol> LIT_INT
+%token<symbol> LIT_CHAR
+%token<symbol> LIT_REAL
+%token<symbol> LIT_STRING
 %token TOKEN_ERROR
 
-%left '+' '-' 
+%type<ast> expr functionArgs restFunctionArgs printel printlst cmd flux attb types literal cmdl restcmdl cmdblock argl arg argsrest function initvarl restvarl variables dec decl program
+
+%start program
+
+%left '|'
+%left '&'
+%left '+' '-'
 %left '*' '/'
-%left '|' '&' '~'
-%left '(' ')'
 %left OPERATOR_EQ OPERATOR_DIF
 %left '<' '>' OPERATOR_GE OPERATOR_LE
+%left '~'
+
+%nonassoc PREC_IF 
 %nonassoc KW_ELSE
-%nonassoc LOWER_THAN_ELSE
+%nonassoc PREC_TOK_ID
+%nonassoc '['
+%nonassoc '('
 
 %%
 
-program: decl
-       ;
+program: decl                               { head = new AST(AST_PROGRAM, {$1}); }
+      ;
 
-decl: dec decl
-    |
+decl: dec decl                              { $$ = new AST(AST_DECL, {$1, $2}); }
+    |                                       { $$ = NULL; }
     ;
 
-dec: variables 
-   | arrays 
-   | functions 
-   | command
+dec: variables                              { $$ = $1; }
+   | function                               { $$ = $1; }
+   | cmdblock
    ;
 
-variables: KW_INT TK_IDENTIFIER '=' LIT_CHAR ';'        //{ insert(SYMBOL_VAR_INT, $2); }
-      | KW_INT TK_IDENTIFIER '=' LIT_INT ';'            //{ insert(SYMBOL_VAR_INT, $2); }
-      | KW_BYTE TK_IDENTIFIER '=' LIT_CHAR ';'          //{ insert(SYMBOL_VAR_BYTE, $2); }
-      | KW_BYTE TK_IDENTIFIER '=' LIT_INT ';'           //{ insert(SYMBOL_VAR_BYTE, $2); }
-      | KW_REAL TK_IDENTIFIER '=' LIT_REAL ';'          //{ insert(SYMBOL_VAR_REAL, $2); }
-      ;
+// *********************************************************************
+
+types: KW_BYTE                              { $$ = new AST(AST_BYTE, {}); }
+     | KW_INT                               { $$ = new AST(AST_INT, {}); }
+     | KW_REAL                              { $$ = new AST(AST_REAL, {}); }
+     ;
+
+literal: LIT_CHAR                           { $$ = new AST(AST_SYMBOL_LIT, {}, $1); }
+    | LIT_INT                               { $$ = new AST(AST_SYMBOL_LIT, {}, $1); }
+    | LIT_REAL                              { $$ = new AST(AST_SYMBOL_LIT, {}, $1); }
+    ;
 
 // *********************************************************************
 
-arrays: KW_INT TK_IDENTIFIER '[' expr ']' '=' listElements ';'          //{ insert(SYMBOL_ARRAY_INT, $2); }
-      | KW_INT TK_IDENTIFIER '[' expr ']' ';'                           //{ insert(SYMBOL_ARRAY_INT, $2); }
-      | KW_REAL TK_IDENTIFIER '[' expr ']' '=' realElements ';'         //{ insert(SYMBOL_ARRAY_REAL, $2); }
-      | KW_REAL TK_IDENTIFIER '[' expr ']' ';'                          //{ insert(SYMBOL_ARRAY_REAL, $2); }
-      | KW_BYTE TK_IDENTIFIER '[' expr ']' '=' listElements ';'        // { insert(SYMBOL_ARRAY_BYTE, $2); }
-      | KW_BYTE TK_IDENTIFIER '[' expr ']' ';'                          //{ insert(SYMBOL_ARRAY_BYTE, $2); }
-        ;
+variables: types TK_IDENTIFIER '=' literal ';'                     { $$ = new AST(AST_VARIABLES, {$1, $4}, $2); }
+         | types TK_IDENTIFIER '[' literal ']' initvarl ';'        { $$ = new AST(AST_VARIABLES_VEC, {$1, $4, $6}, $2); }
+         ;
 
-listElements: elementsTypes
-        | elementsTypes ',' listElements
-        ;
 
-elementsTypes: LIT_CHAR
-             | LIT_INT
-             ;
+initvarl: '=' literal restvarl              { $$ = new AST(AST_VARIABLES_ARG, {$2, $3}); }
+         |                                  { $$ = NULL; }
+         ;
 
-realElements: LIT_REAL
-        | LIT_REAL ',' realElements
-        ;
+restvarl: ',' literal restvarl              { $$ = new AST(AST_VARIABLES_ARG, {$2, $3}); }
+         |                                  { $$ = NULL; }
+         ;
 
 // *********************************************************************
 
-functions: KW_INT TK_IDENTIFIER '('paramsList')' commandBlock // //{ insert(SYMBOL_FUNC_INT, $2); }
-      |KW_REAL TK_IDENTIFIER '('paramsList')' commandBlock     //{ insert(SYMBOL_FUNC_REAL, $2); }
-      |KW_BYTE TK_IDENTIFIER '('paramsList')' commandBlock     //{ insert(SYMBOL_FUNC_BYTE, $2); }
-      ;
 
-paramsList:
-        | paramsListEmpty
-        ;
-
-paramsListEmpty: paramElement
-        | paramElement ',' paramsListEmpty
-        ;
-
-paramElement: KW_INT TK_IDENTIFIER
-        | KW_BYTE TK_IDENTIFIER
-        | KW_REAL TK_IDENTIFIER
-        ;
-
-
-// *********************************************************************
-// commands
-commandBlock: '{' commandList '}'
-        ;
-
-commandList:
-       | command commandList
+function: types TK_IDENTIFIER '(' argl ')' cmdblock  { $$ = new AST(AST_FUNCTION, {$1, $4, $6}, $2); }
        ;
 
+argl: arg argsrest                          { $$ = new AST(AST_FUNCTION_ARGS, {$1, $2}); }
+   |                                        { $$ = NULL; }
+   ;
 
-command: TK_IDENTIFIER '=' expr ';'
-    | TK_IDENTIFIER'['expr']' '=' expr ';'
-    | KW_RETURN expr';'
-    | KW_READ TK_IDENTIFIER';'
-    | KW_IF '('expr')' if_blocok %prec LOWER_THAN_ELSE
-    | KW_IF '('expr')' if_blocok KW_ELSE if_blocok
-    | KW_WHILE expr KW_DO commandBlock 
-    | KW_PRINT print_lst';'
-    | KW_DO if_blocok KW_WHILE expr ';'
-    | ';'
-    | commandBlock
-    ;
+arg: types TK_IDENTIFIER                    { $$ = new AST(AST_FUNCTION_ARG, {$1}, $2); }
+   ;
+
+argsrest: ',' arg argsrest                  { $$ = new AST(AST_FUNCTION_ARGS, {$2, $3}); }
+        |                                   { $$ = NULL; }
+        ;
 
 // *********************************************************************
 
-if_blocok: commandBlock
-  ;
+cmdblock: '{' cmdl '}'                      { $$ = new AST(AST_CMDBLK, {$2}); }
+      | '{' '}'                             { $$ = new AST(AST_EMPTY_CMDBLK, {}); }
+      ;
 
-param: params
-    | 
+cmdl: cmd restcmdl                          { $$ = new AST(AST_CMDL, {$1, $2}); }
     ;
 
-params: paramValue
-        | paramValue ',' params
+restcmdl: cmdl                              { $$ = $1; }
+        |                                   { $$ = NULL; }
         ;
 
-paramValue: TK_IDENTIFIER
-        | LIT_CHAR
-        | LIT_REAL
-        | LIT_INT
-        | expr
-        ;
+cmd: attb ';'                               { $$ = $1; }
+   | flux                                   { $$ = $1; }
+   | KW_READ TK_IDENTIFIER ';'              { $$ = new AST(AST_READ, {}, $2); }
+   | KW_PRINT printel printlst ';'          { $$ = new AST(AST_PRINT, {$2, $3}); }
+   | KW_RETURN expr ';'                     { $$ = new AST(AST_RETURN, {$2}); }
+   | ';'                                    { $$ = new AST(AST_EMPTY_CMD, {}); }
+   | cmdblock                               { $$ = $1; }
+   ;
 
-// ******************************************************************************8
+// *********************************************************************
 
-function: TK_IDENTIFIER '(' param ')' 
-        ;
 
-print_lst: print_elem 
-        |print_elem print_lst
-        ;
-
-print_elem: LIT_STRING
-        | expr
-        ;
-
-expr: function 
-    | TK_IDENTIFIER'['expr']'
-    | TK_IDENTIFIER
-    | LIT_INT
-    | LIT_CHAR
-    | LIT_REAL
-    | expr '+' expr
-    | expr '-' expr
-    | expr '*' expr
-    | expr '/' expr
-    | expr '&' expr
-    | expr '|' expr
-    | expr '<' expr
-    | expr '>' expr
-    | expr OPERATOR_EQ expr
-    | expr OPERATOR_DIF expr
-    | expr OPERATOR_GE expr
-    | expr OPERATOR_LE expr
-    | expr '~' expr
-    | '('expr')'
+attb: TK_IDENTIFIER '=' expr                { $$ = new AST(AST_ATTB, {$3}, $1); }
+    | TK_IDENTIFIER '[' expr ']' '=' expr   { $$ = new AST(AST_ATTB_VEC, {$3, $6}, $1); }
     ;
+
+flux: KW_IF '(' expr ')' cmd %prec PREC_IF  { $$ = new AST(AST_IF, {$3, $5}); }
+    | KW_IF '(' expr ')' cmd KW_ELSE cmd    { $$ = new AST(AST_IF_ELSE, {$3, $5, $7}); }
+    | KW_WHILE expr KW_DO cmd               { $$ = new AST(AST_WHILE, {$2, $4}); }
+    | KW_DO cmd KW_WHILE expr ';'           { $$ = new AST(AST_DO_WHILE, {$2, $4}); }
+    ;
+
+printel: LIT_STRING                         { $$ = new AST(AST_STRING, {}, $1); }
+       | expr                               { $$ = $1; }
+       ;
+
+printlst: printel printlst                  { $$ = new AST(AST_PRINT_REST, {$1,$2}); }
+         |                                  { $$ = NULL; }
+         ;
+  
+// *********************************************************************
+
+
+expr: expr '+' expr			                { $$ = new AST(AST_ADD, {$1, $3}); }
+    | expr '-' expr			                { $$ = new AST(AST_SUB, {$1, $3}); }
+    | expr '*' expr			                { $$ = new AST(AST_MUL, {$1, $3}); }
+    | expr '/' expr			                { $$ = new AST(AST_DIV, {$1, $3}); }
+    | expr '<' expr			                { $$ = new AST(AST_LSR, {$1, $3}); }
+    | expr '>' expr			                { $$ = new AST(AST_GTR, {$1, $3}); }
+    | expr OPERATOR_LE expr		            { $$ = new AST(AST_LE, {$1, $3}); }
+    | expr OPERATOR_GE expr		            { $$ = new AST(AST_GE, {$1, $3}); }
+    | expr OPERATOR_EQ expr		            { $$ = new AST(AST_EQ, {$1, $3}); }
+    | expr OPERATOR_DIF expr	            { $$ = new AST(AST_DIF, {$1, $3}); }
+    | expr '&' expr                         { $$ = new AST(AST_AND, {$1, $3}); }
+    | expr '|' expr			                { $$ = new AST(AST_OR, {$1, $3}); }
+    | expr '~' expr			                { $$ = new AST(AST_NOT, {$1, $3}); }
+    | literal				                { $$ = new AST(AST_LIT, {$1}); }
+    | TK_IDENTIFIER	%prec PREC_TOK_ID       { $$ = new AST(AST_SYMBOL_ID, {}, $1); }
+    | TK_IDENTIFIER '[' expr ']'            { $$ = new AST(AST_SYMBOL_VEC, {$3}, $1); }
+    | '(' expr ')'                          { $$ = new AST(AST_PRTSS, {$2}); }
+    | TK_IDENTIFIER '(' functionArgs ')'    { $$ = new AST(AST_SYMBOL_FUNCTION, {$3}, $1); }
+    | TK_IDENTIFIER '(' ')'                 { $$ = new AST(AST_SYMBOL_FUNCTION, {}, $1); }
+    ;
+
+functionArgs: expr restFunctionArgs         { $$ = new AST(AST_SYMBOL_FUNCTION_ARGS, {$1, $2}); }
+        ;
+
+restFunctionArgs: ',' functionArgs          { $$ = $2; }
+            |                               { $$ = NULL; }
+            ;
+
+// *********************************************************************
 
 %%
 

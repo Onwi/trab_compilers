@@ -1,5 +1,8 @@
 #include <string>
 
+#ifndef SYMBOL_HEADER 
+#define SYMBOL_HEADER 
+
 enum SymbolType{
   SYMBOL_IDENTIFIER,
   SYMBOL_LIT_INT, SYMBOL_LIT_CHAR, SYMBOL_LIT_REAL, SYMBOL_LIT_STRING,
@@ -15,3 +18,5 @@ typedef struct SYMBOL {
 
 Symbol *insert(int type, std::string text);
 void printSymbolsTable();
+
+#endif 

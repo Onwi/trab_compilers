@@ -1,0 +1,7 @@
+int l=3;
+{
+m=3;
+}
+int myfddc(int n, byte k){
+print "lol";
+}

@@ -1,6 +1,7 @@
 %{
-  #include "parser.tab.hpp"
   #include "symbols.hpp"
+  #include "ast.hpp"
+  #include "parser.tab.hpp"
   int running = 1;
   int lineNumber = 1;
   int getLineNumber(void);
@@ -25,13 +26,13 @@ read    { return KW_READ; }
 print   { return KW_PRINT; }
 return  { return KW_RETURN; }
 
-[\']\\*.[\'] { insert(SYMBOL_LIT_CHAR, yytext); return LIT_CHAR; }
-\"[^\"]*(\\\"[^\"]*)*\" { insert(SYMBOL_LIT_STRING, yytext); return LIT_STRING; }
-[0-9]+  { insert(SYMBOL_LIT_INT, yytext); return LIT_INT; }
-[0-9]+[/][0-9]+ { insert(SYMBOL_LIT_REAL, yytext); return LIT_REAL; }
+[\']\\*.[\']            { yylval.symbol = insert(SYMBOL_LIT_CHAR, yytext); return LIT_CHAR; }
+\"[^\"]*(\\\"[^\"]*)*\" { yylval.symbol = insert(SYMBOL_LIT_STRING, yytext); return LIT_STRING; }
+[0-9]+                  { yylval.symbol = insert(SYMBOL_LIT_INT, yytext); return LIT_INT; }
+[0-9]+[/][0-9]+         { yylval.symbol = insert(SYMBOL_LIT_REAL, yytext); return LIT_REAL; }
 
 [,;:()\[\]{}=+\-*/%<>&|~]    { return yytext[0]; }
-[a-zA-Z_]+[a-zA-Z_0-9]* { insert(SYMBOL_IDENTIFIER, yytext); return TK_IDENTIFIER; }
+[a-zA-Z_]+[a-zA-Z_0-9]* {  yylval.symbol = insert(SYMBOL_IDENTIFIER, yytext); return TK_IDENTIFIER; }
 
 "=="    { return OPERATOR_EQ; }
 "!="    { return OPERATOR_DIF; }
