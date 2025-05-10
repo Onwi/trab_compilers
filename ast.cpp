@@ -37,6 +37,10 @@ void printAST(AST *node, int level) {
   }
 }
 
+const char *operations[] = {
+	"+", "-", "*", "/",
+	"&", "|", "<=", ">=", "==", "!=", "<", ">", "~"
+};
 
 void astWrite(AST* node, FILE* file) {
 	if(node != NULL) {
@@ -110,7 +114,7 @@ void astWrite(AST* node, FILE* file) {
 			case AST_GTR:
 			case AST_NOT:
 				astWrite(node->child[0], file);
-				fprintf(file, "%s", AstTypesNames[node->type - 11].c_str());
+				fprintf(file, "%s", operations[node->type - 9]);
 				astWrite(node->child[1], file);
 				break;
 
