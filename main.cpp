@@ -34,14 +34,11 @@ int main(int argc, char **argv) {
 
 
   initMe();
-  std::cout << "hello!\n";
 
   yyparse();
-  std::cout << "hello3!\n";
   //printSymbolsTable();
-  std::cout << "hello2!\n";
 
-  printAST(head, 0);
+  //printAST(head, 0);
   astWrite(head, yyout);
 
   printf("compilation was succesfull!!\n");

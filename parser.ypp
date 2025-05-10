@@ -147,7 +147,6 @@ cmd: attb ';'                               { $$ = $1; }
 
 // *********************************************************************
 
-
 attb: TK_IDENTIFIER '=' expr                { $$ = new AST(AST_ATTB, {$3}, $1); }
     | TK_IDENTIFIER '[' expr ']' '=' expr   { $$ = new AST(AST_ATTB_VEC, {$3, $6}, $1); }
     ;
@@ -190,11 +189,11 @@ expr: expr '+' expr			                { $$ = new AST(AST_ADD, {$1, $3}); }
     | TK_IDENTIFIER '(' ')'                 { $$ = new AST(AST_SYMBOL_FUNCTION, {}, $1); }
     ;
 
-functionArgs: expr restFunctionArgs         { $$ = new AST(AST_SYMBOL_FUNCTION_ARGS, {$1, $2}); }
+functionArgs: expr restFunctionArgs       { $$ = new AST(AST_SYMBOL_FUNCTION_ARGS, {$1, $2}); }
         ;
 
-restFunctionArgs: ',' functionArgs          { $$ = $2; }
-            |                               { $$ = NULL; }
+restFunctionArgs: ',' functionArgs        { $$ = $2; }
+            |                             { $$ = NULL; }
             ;
 
 // *********************************************************************
