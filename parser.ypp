@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 
+#include "semantic.hpp"
 #include "ast.hpp"
 #include "symbols.hpp"
 
@@ -67,7 +68,10 @@ AST* head;
 
 %%
 
-program: decl                               { head = new AST(AST_PROGRAM, {$1}); }
+program: decl           { 
+                          head = new AST(AST_PROGRAM, {$1}); 
+                          check_and_set_declarations($1);
+                        }
       ;
 
 decl: dec decl                              { $$ = new AST(AST_DECL, {$1, $2}); }

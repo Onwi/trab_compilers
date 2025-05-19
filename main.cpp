@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
   initMe();
 
   yyparse();
-  //printSymbolsTable();
+  printSymbolsTable();
 
   //printAST(head, 0);
   astWrite(head, yyout);

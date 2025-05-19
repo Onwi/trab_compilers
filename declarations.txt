@@ -1,0 +1,9 @@
+int a = 3;
+int b = 3;
+
+int lamaquina() {
+  f=0;
+}
+
+// should error saying 'a' is already declared
+byte a = 0;
