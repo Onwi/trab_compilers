@@ -1,6 +1,1 @@
-int a=3;
-int b=3;
-int lamaquina(){
-f=0;
-}
-byte a=0;
+int myfddc(){}

@@ -71,6 +71,8 @@ AST* head;
 program: decl           { 
                           head = new AST(AST_PROGRAM, {$1}); 
                           check_and_set_declarations($1);
+                          semantic_check_undeclared();
+                          checkOperands($1);
                         }
       ;
 

@@ -31,6 +31,18 @@ Symbol *insert(int type, std::string text) {
 
 void printSymbolsTable() {
   for (auto s : symbolTable) {
-    std::cout << "Symbol[" << s.second->text << "," << s.second->type << "]" << std::endl;
+    std::cout << "Symbol: " << s.second->text << ", SymbolType: " << s.second->type << ", dataType: " << s.second->dataType << std::endl;
   }
+}
+
+int check_undeclared() {
+  int undeclared_symbols = 0;
+  for (auto s : symbolTable) {
+    if (s.second->type == SYMBOL_IDENTIFIER) {
+      ++undeclared_symbols;
+      std::cerr << "Undeclared Symbol [" << s.second->text << "], type:" << s.second->type << std::endl;
+    }
+  }
+
+  return undeclared_symbols;
 }

@@ -1,9 +1,10 @@
 int a = 3;
 int b = 3;
 
-int lamaquina() {
-  f=0;
+real lamaquina() {
+  // i think this is allowed in language definition tho
+  // undeclaredInt = 1;
 }
 
-// should error saying 'a' is already declared
-byte a = 0;
+byte mybyte = 4;
+

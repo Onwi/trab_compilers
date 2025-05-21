@@ -9,6 +9,7 @@ int yyparse();
 
 extern FILE *yyin;
 extern FILE *yyout;
+extern int SemanticErrors;
 
 int isRunning(void);
 void initMe();
@@ -41,7 +42,12 @@ int main(int argc, char **argv) {
   //printAST(head, 0);
   astWrite(head, yyout);
 
-  printf("compilation was succesfull!!\n");
+  if (SemanticErrors == 0) {
+    printf("Compilation was succesfull!!\n");
+  } else {
+    printf("Main:  Semantic Error!!\n");
+    exit(4);
+  }
 
   exit(0);
 }

@@ -11,12 +11,21 @@ enum SymbolType{
   SYMBOL_FUNC_INT, SYMBOL_FUNC_BYTE, SYMBOL_FUNC_REAL
 };
 
+enum DataTypes{
+  DATATYPE_INT, DATATYPE_BYTE, DATATYPE_REAL,
+  DATATYPE_CHAR, DATATYPE_STRING,
+};
+
 typedef struct SYMBOL {
+  // lets use 64(2x32) bits to store a few types
+  // its 2025, memory is cheap and I'm lazy
   int type;
+  int dataType;
   std::string text;
 } Symbol;
 
 Symbol *insert(int type, std::string text);
 void printSymbolsTable();
+int check_undeclared();
 
 #endif 
