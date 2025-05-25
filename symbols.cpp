@@ -15,7 +15,24 @@ std::string tokenIds[] = {
   "STRINGS"
 }; 
 
-Symbol *insert(int type, std::string text) {
+FUNC_PARAMS* GetLastFP(SYMBOL* symb) {
+  FUNC_PARAMS* fp = symb->funcParams;
+  while(fp->nextParam != NULL) {
+    fp = fp->nextParam;
+  }
+  return fp;
+}
+
+int GetNumberParamsFP(FUNC_PARAMS* fp) {
+  int count = 0;
+  while(fp != NULL) {
+    fp = fp->nextParam;
+    count++;
+  }
+  return count;
+}
+
+Symbol *insert(int type, std::string text, int dataType) {
   std::map<std::string, Symbol*>::iterator it = symbolTable.find(text);
   if (it != symbolTable.end())  {
     return it->second;
@@ -24,6 +41,7 @@ Symbol *insert(int type, std::string text) {
   Symbol *newSymbol = (Symbol *) malloc(sizeof(Symbol)); 
   newSymbol->type = type;
   newSymbol->text = text;
+  newSymbol->dataType = dataType;
   symbolTable[text] = newSymbol;
 
   return newSymbol;

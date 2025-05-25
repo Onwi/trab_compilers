@@ -20,7 +20,9 @@ std::string AstTypesNames[] = {
   "AST_VARIABLES", "AST_VARIABLES_VEC", "AST_VARIABLES_ARG",
   // BACKBONE
   "AST_DECL", "AST_PROGRAM", "AST_SYMBOL_ID", "AST_SYMBOL_VEC", "AST_PRTSS",
-  "AST_SYMBOL_FUNCTION", "AST_SYMBOL_FUNCTION_ARGS"
+  "AST_SYMBOL_FUNCTION", "AST_SYMBOL_FUNCTION_ARGS",
+  //
+	"AST_SYMBOL_LIT_CHAR", "AST_SYMBOL_LIT_INT", "AST_SYMBOL_LIT_REAL", 
 };
 
 void printAST(AST *node, int level) {
@@ -53,7 +55,9 @@ void astWrite(AST* node, FILE* file) {
 				break;
 
 			// SYMBOLS:
-			case AST_SYMBOL_LIT:
+			case AST_SYMBOL_LIT_CHAR:
+			case AST_SYMBOL_LIT_INT:
+			case AST_SYMBOL_LIT_REAL:
 			case AST_SYMBOL_ID:
 			case AST_STRING: 
 				fprintf(file, "%s", node->symbol->text.c_str());

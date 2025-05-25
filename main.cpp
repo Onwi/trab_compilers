@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <iostream>
 
 #include "ast.hpp"
+#include "semantic.hpp"
+#include "symbols.hpp"
 
 int yylex();
 int yyparse();
@@ -25,12 +26,12 @@ int main(int argc, char **argv) {
 
   if(0 == (yyin=fopen(argv[1],"r"))) {
     fprintf(stderr, "error opening file!!");
-    exit(1);
+    exit(2);
   }
 
   if(0 == (yyout=fopen(argv[2],"w"))) {
     fprintf(stderr, "error opening file!!");
-    exit(1);
+    exit(2);
   }
 
 
@@ -41,6 +42,10 @@ int main(int argc, char **argv) {
 
   //printAST(head, 0);
   astWrite(head, yyout);
+  check_and_set_declarations(head);
+  semantic_check_undeclared();
+  checkOperands(head, NULL);
+                        
 
   if (SemanticErrors == 0) {
     printf("Compilation was succesfull!!\n");

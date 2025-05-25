@@ -1,10 +1,11 @@
-int a = 3;
-int b = 3;
-
-real lamaquina() {
-  // i think this is allowed in language definition tho
-  // undeclaredInt = 1;
+real myf() {
+  return 1;
 }
 
-byte mybyte = 4;
+int a = 3;
+int c = 3;
+int vdf[3];
 
+{
+  c = 3 + myf();
+}

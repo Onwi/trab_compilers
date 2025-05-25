@@ -70,9 +70,9 @@ AST* head;
 
 program: decl           { 
                           head = new AST(AST_PROGRAM, {$1}); 
-                          check_and_set_declarations($1);
-                          semantic_check_undeclared();
-                          checkOperands($1);
+                          //check_and_set_declarations($1);
+                          //semantic_check_undeclared();
+                          //checkOperands($1, NULL);
                         }
       ;
 
@@ -92,9 +92,9 @@ types: KW_BYTE                              { $$ = new AST(AST_BYTE, {}); }
      | KW_REAL                              { $$ = new AST(AST_REAL, {}); }
      ;
 
-literal: LIT_CHAR                           { $$ = new AST(AST_SYMBOL_LIT, {}, $1); }
-    | LIT_INT                               { $$ = new AST(AST_SYMBOL_LIT, {}, $1); }
-    | LIT_REAL                              { $$ = new AST(AST_SYMBOL_LIT, {}, $1); }
+literal: LIT_CHAR                           { $$ = new AST(AST_SYMBOL_LIT_CHAR, {}, $1, DATATYPE_BYTE); }
+    | LIT_INT                               { $$ = new AST(AST_SYMBOL_LIT_INT , {}, $1, DATATYPE_INT);   }
+    | LIT_REAL                              { $$ = new AST(AST_SYMBOL_LIT_REAL, {}, $1, DATATYPE_REAL); }
     ;
 
 // *********************************************************************
@@ -186,7 +186,7 @@ expr: expr '+' expr			                { $$ = new AST(AST_ADD, {$1, $3}); }
     | expr OPERATOR_DIF expr	            { $$ = new AST(AST_DIF, {$1, $3}); }
     | expr '&' expr                         { $$ = new AST(AST_AND, {$1, $3}); }
     | expr '|' expr			                { $$ = new AST(AST_OR, {$1, $3}); }
-    | expr '~' expr			                { $$ = new AST(AST_NOT, {$1, $3}); }
+    | '~' expr			                    { $$ = new AST(AST_NOT, {$2}); }
     | literal				                { $$ = new AST(AST_LIT, {$1}); }
     | TK_IDENTIFIER	%prec PREC_TOK_ID       { $$ = new AST(AST_SYMBOL_ID, {}, $1); }
     | TK_IDENTIFIER '[' expr ']'            { $$ = new AST(AST_SYMBOL_VEC, {$3}, $1); }

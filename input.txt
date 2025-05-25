@@ -1,5 +1,12 @@
-int myfddc() {
-  a = 2+3;
+int a =9;
+
+int funf(int d, int b) {
+  return b+d;
+}
+
+real r = 2/1;
+{
+a = funf(a,a);
 }
 
 

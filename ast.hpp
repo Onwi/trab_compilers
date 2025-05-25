@@ -24,16 +24,19 @@ enum AstTypes {
   AST_VARIABLES, AST_VARIABLES_VEC, AST_VARIABLES_ARG,
   // BACKBONE
   AST_DECL, AST_PROGRAM, AST_SYMBOL_ID, AST_SYMBOL_VEC, AST_PRTSS,
-  AST_SYMBOL_FUNCTION, AST_SYMBOL_FUNCTION_ARGS
+  AST_SYMBOL_FUNCTION, AST_SYMBOL_FUNCTION_ARGS,
+    ///
+	AST_SYMBOL_LIT_CHAR, AST_SYMBOL_LIT_INT, AST_SYMBOL_LIT_REAL, 
 };
 
 struct AST {
 	int type;
 	std::vector<AST*> child;
 	SYMBOL* symbol;
+  int dataType;
 
 	public:
-	AST(int t, std::vector<AST*> c, SYMBOL* s=NULL): type(t), child(c), symbol(s) {};
+	AST(int t, std::vector<AST*> c, SYMBOL* s=NULL, int d=JUST_FOR_SKIP): type(t), child(c), symbol(s), dataType(d) {};
 };
 
 void printAST(AST *node, int level);
