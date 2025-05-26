@@ -26,10 +26,10 @@ read    { return KW_READ; }
 print   { return KW_PRINT; }
 return  { return KW_RETURN; }
 
-[\']\\*.[\']            { yylval.symbol = insert(SYMBOL_LIT_CHAR, yytext); return LIT_CHAR; }
+[\']\\*.[\']            { yylval.symbol = insert(SYMBOL_LIT_CHAR, yytext, DATATYPE_CHAR); return LIT_CHAR; }
 \"[^\"]*(\\\"[^\"]*)*\" { yylval.symbol = insert(SYMBOL_LIT_STRING, yytext); return LIT_STRING; }
-[0-9]+                  { yylval.symbol = insert(SYMBOL_LIT_INT, yytext); return LIT_INT; }
-[0-9]+[/][0-9]+         { yylval.symbol = insert(SYMBOL_LIT_REAL, yytext); return LIT_REAL; }
+[0-9]+                  { yylval.symbol = insert(SYMBOL_LIT_INT, yytext, DATATYPE_INT); return LIT_INT; }
+[0-9]+[/][0-9]+         { yylval.symbol = insert(SYMBOL_LIT_REAL, yytext, DATATYPE_REAL); return LIT_REAL; }
 
 [,;:()\[\]{}=+\-*/%<>&|~]    { return yytext[0]; }
 [a-zA-Z_]+[a-zA-Z_0-9]* {  yylval.symbol = insert(SYMBOL_IDENTIFIER, yytext); return TK_IDENTIFIER; }

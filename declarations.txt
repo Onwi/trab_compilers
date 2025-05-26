@@ -1,0 +1,11 @@
+real myf() {
+  return 1;
+}
+
+int a = 3;
+int c = 3;
+int vdf[3];
+
+{
+  c = 3 + myf();
+}

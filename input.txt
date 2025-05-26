@@ -1,24 +1,15 @@
-int  l = 3;
+int a =9;
 
-{ m =3; }
-
-int myfddc(int n, byte k) {
-    print "lol";
+int funf(int d, int b) {
+  return b+d;
 }
 
+real r = 2/1;
+{
+a = funf(a,a);
+}
+
+
 /-- 
-
-AST from commands above
-
-AST: AST_DECL,  
-    AST: AST_VARIABLES, l 
-        AST: AST_INT,  
-        AST: AST_LIT, 3 
-    AST: AST_DECL,  
-        AST: AST_CMDBLK,  
-            AST: AST_CMDL,  
-                AST: AST_ATTB, m 
-                    AST: AST_LIT,  
-                        AST: AST_LIT, 3 
 
 --/
