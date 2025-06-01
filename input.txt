@@ -1,14 +1,9 @@
-int a =9;
+int ab = 3;
+int j =22;
 
-int funf(int d, int b) {
-  return b+d;
-}
-
-real r = 2/1;
 {
-a = funf(a,a);
+  j = 33 + ab;
 }
-
 
 /-- 
 

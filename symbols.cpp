@@ -47,6 +47,13 @@ Symbol *insert(int type, std::string text, int dataType) {
   return newSymbol;
 }
 
+Symbol *makeTemp() {
+  static int serial = 0;
+  char buffer[256];
+  sprintf(buffer, "myWeeirdTemp_%d", serial++);
+  return insert(SYMBOL_VARIABLE, buffer);
+}
+
 void printSymbolsTable() {
   for (auto s : symbolTable) {
     std::cout << "Symbol: " << s.second->text << ", SymbolType: " << s.second->type << ", dataType: " << s.second->dataType << std::endl;

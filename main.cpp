@@ -4,6 +4,7 @@
 #include "ast.hpp"
 #include "semantic.hpp"
 #include "symbols.hpp"
+#include "tacs.hpp"
 
 int yylex();
 int yyparse();
@@ -45,6 +46,9 @@ int main(int argc, char **argv) {
   check_and_set_declarations(head);
   semantic_check_undeclared();
   checkOperands(head, NULL);
+
+  TAC *tacs = generateCode(head);
+  tacPrintBackwards(tacs);
                         
 
   if (SemanticErrors == 0) {

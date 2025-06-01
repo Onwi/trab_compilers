@@ -36,9 +36,9 @@ struct FUNC_PARAMS {
 };
 
 Symbol *insert(int type, std::string text, int dataType=JUST_FOR_SKIP);
+Symbol *makeTemp();
 void printSymbolsTable();
 int check_undeclared();
-
 
 int GetNumberParamsFP(FUNC_PARAMS* fp);
 FUNC_PARAMS* GetLastFP(SYMBOL* symb);
