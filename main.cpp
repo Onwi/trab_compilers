@@ -39,9 +39,9 @@ int main(int argc, char **argv) {
   initMe();
 
   yyparse();
-  printSymbolsTable();
+  // printSymbolsTable();
 
-  //printAST(head, 0);
+  printAST(head, 0);
   astWrite(head, yyout);
   check_and_set_declarations(head);
   semantic_check_undeclared();
@@ -49,7 +49,6 @@ int main(int argc, char **argv) {
 
   TAC *tacs = generateCode(head);
   tacPrintBackwards(tacs);
-                        
 
   if (SemanticErrors == 0) {
     printf("Compilation was succesfull!!\n");

@@ -1,0 +1,159 @@
+int a = 10;
+byte g = 'p';
+int b[3] = 2,3,4;
+//int b3[4] = 1,2;
+int terr[01] = 1,2,3,4,5,6,7,8,9,0;
+real terr2[11] = 1/1,1/1,1/1,1/1,1/1,1/1,1/1,1/1,1/1,1/1,1/1;
+//int terr3[01] = 1,2,3,4,5,6,7,8,9,0;
+//int terr4[01] = 1,2,3,4,5,6,7,8,9,0;
+int b0[1000];
+
+real __o = 2/4;
+
+byte hhh[10];
+
+
+real WAH(){
+
+}
+//int a = 12;
+
+int function(real u, real v) {
+
+}
+
+int function2(real u1, real v2, real w) {
+
+}
+
+real fnct(real var1, byte var2, int var3, int var4, int var5, real var6) {}
+
+real d = 2/4;
+byte erm = '0';
+
+byte func(int c, real v1, int b2) {
+  a = a+b[2];
+  a = a+c;
+  a = function(10/3, 9/4)+c;
+  a = function2(10/3, 9/4, 4/23)+c;
+  d = fnct(11/9, 3, 4, 5, 6, 23/56);
+
+  terr[3] = 1;
+
+  //b = 1;
+  //function = 1;
+
+  // CERTOS:
+  // INT +-*/ with BYTE
+  a = a+erm;
+  a = a-erm;
+  a = a*erm;
+  a = a/erm;
+
+  // INT +-*/ with INT
+  a = a+1;
+  a = a-2;
+  a = a*3;
+  a = a/4;
+
+  // BYTE +-*/ with BYTE
+  g = g+'1';
+  g = g-'2';
+  g = g*'3';
+  g = g/'4';
+
+  // REAL +-*/ with REAL
+  d = d+1/1;
+  d = d-2/1;
+  d = d*3/1;
+  d = d/4/1;
+
+  // % INT and BYTE
+  //a = a%g;
+  //a = a%1;
+  //g = g%'2';
+
+  // ERRADOS:
+  // INT +-*/ with REAL
+  //a = a+d;
+  //a = a-d;
+  //a = a*d;
+  //a = a/d;
+
+  // INT +-*/ with BOOL
+  //a = a+(a==a);
+  //a = a+(a!=a);
+  //a = a+(a>=a);
+  //a = a+(a<=a);
+  //a = a+(a>a);
+  //a = a+(a<a);
+
+  // REAL +-*/ with BYTE
+  //d = d+erm;
+  //d = d-erm;
+  //d = d*erm;
+  //d = d/erm;
+
+  // REAL +-*/ with BOOL
+  //d = d+(a==a);
+  //d = d+(a!=a);
+  //d = d+(a>=a);
+  //d = d+(a<=a);
+  //d = d+(a>a);
+  //d = d+(a<a);
+
+  // INT relational with REAL
+  //a = a==d;
+  //a = a!=d;
+  //a = a<=d;
+  //a = a>=d;
+  //a = a<d;
+  //a = a>d;
+
+  // INT relational with BOOL
+  //a = a==(a==a);
+  //a = a!=(a==a);
+  //a = a<=(a==a);
+  //a = a>=(a==a);
+  //a = a<(a==a);
+  //a = a>(a==a);
+
+  // % with REAL and BOOL
+  //a = a % 9/8;
+  //a = a % (a<=a);
+
+  // VECTOR with funccall
+  //a=b0[1000]+function(d, d); // certo
+
+  return 'a'; // certo
+  return 9; // certo
+  //return 9/3; // errado
+
+  print "print this!" "or maybe this" a d;
+
+  a = 0;
+  while a == 2 do {
+    a = a + 1;
+  }
+
+  do {
+    a = a - 1;
+  } while (a == 0);
+
+  if ( a == 0 ) {
+    print "PRINTADO" a;
+  }
+
+  if (a != 0) {
+    print "NAO PRINTADO" a;
+  }
+  else {
+    print "PRINTADO" b[0];
+  }
+
+  if(a<a & a<=a | a>=a | ~(a>a) )
+
+  read a;
+
+}
+

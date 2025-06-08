@@ -1,10 +1,53 @@
-int ab = 3;
-int j =22;
+int v = 10;
+int k = 5;
 
 {
-  j = 33 + ab;
+  k = ~v;  
 }
 
+
 /-- 
+
+TAC(TAC_MOVE, v, temp_2, 0)
+TAC(TAC_ADD, temp_2, k, 1)
+TAC(TAC_MOVE, k, temp_1, 0)
+TAC(TAC_ADD, temp_1, 1, v)
+TAC(TAC_LE, temp_0, 3, 4)
+TAC(TAC_MOVE, k, 5, 0)
+TAC(TAC_MOVE, v, 10, 0)
+
+
+
+AST: AST_PROGRAM,
+    AST: AST_DECL,
+        AST: AST_VARIABLES, v
+            AST: AST_INT,
+            AST: AST_SYMBOL_LIT_INT, 0
+        AST: AST_DECL,
+            AST: AST_VARIABLES, k
+                AST: AST_INT,
+                AST: AST_SYMBOL_LIT_INT, 1
+            AST: AST_DECL,
+                AST: AST_CMDBLK,
+                    AST: AST_CMDL,
+                        AST: AST_IF,
+                            AST: AST_LE,
+                                AST: AST_LIT,
+                                    AST: AST_SYMBOL_LIT_INT, 3
+                                AST: AST_LIT,
+                                    AST: AST_SYMBOL_LIT_INT, 4
+                            AST: AST_CMDBLK,
+                                AST: AST_CMDL,
+                                    AST: AST_ATTB, k
+                                        AST: AST_ADD,
+                                            AST: AST_LIT,
+                                                AST: AST_SYMBOL_LIT_INT, 1
+                                            AST: AST_SYMBOL_ID, v
+                                    AST: AST_CMDL,
+                                        AST: AST_ATTB, v
+                                            AST: AST_ADD,
+                                                AST: AST_SYMBOL_ID, k
+                                                AST: AST_LIT,
+                                                    AST: AST_SYMBOL_LIT_INT, 1
 
 --/

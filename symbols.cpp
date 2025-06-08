@@ -48,10 +48,17 @@ Symbol *insert(int type, std::string text, int dataType) {
 }
 
 Symbol *makeTemp() {
-  static int serial = 0;
-  char buffer[256];
-  sprintf(buffer, "myWeeirdTemp_%d", serial++);
-  return insert(SYMBOL_VARIABLE, buffer);
+  static int serialTemp = 0;
+  static char buffer[32];
+  snprintf(buffer, 32, "temp_%d", serialTemp++);
+  return insert(SYMBOL_IDENTIFIER, buffer);
+}
+
+Symbol *makeLabel() {
+  static int serialLabel = 0;
+  static char buffer[32] = "";
+  snprintf(buffer, 32, "label_%d", serialLabel++);
+  return insert(SYMBOL_IDENTIFIER, buffer);
 }
 
 void printSymbolsTable() {
