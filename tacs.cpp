@@ -1,5 +1,6 @@
 #include <cstddef>
 #include <cstdio>
+#include <cstdlib>
 #include "tacs.hpp"
 
 std::string TacTypesNames[] = {
@@ -100,9 +101,18 @@ TAC *generateCode(AST *node) {
       result = new TAC(TAC_MOVE, node->symbol, code[1] ? code[1]->res : 0, 0);
       break;
 
-    case AST_IF_ELSE:
+    case AST_IF:
       result = makeIfThen(code[0], code[1]);
+      break;
+    case AST_IF_ELSE:
+      result = makeIfThenElse(code[0], code[1], code[2]);
+      break;
 
+    case AST_WHILE:
+      result = makeWhile(code[0], code[1]);
+      break;
+    case AST_DO_WHILE:
+      result = makeDoWhile(code[0], code[1]);
       break;
     default: // return code for all subtrees
        result = tacJoin(
@@ -122,16 +132,70 @@ TAC *tacHandleExpr(TAC *code0, TAC *code1, TacTypes type) {
 }
 
 TAC *makeIfThen(TAC *code0, TAC *code1) {
-  TAC *ntif = 0;
-  TAC *ntlab = 0;
+  TAC *ntif = 0; // jump TAC
+  TAC *ntlab = 0; // label TAC
   Symbol *newLabel = makeLabel();
 
-  ntif = new TAC(TAC_IFF, newLabel, code0 ? code0->res : 0, 0);
+  ntif = new TAC(TAC_IFF, newLabel, code0 ? code0->res : 0, 0); // if false, jump to newLabel
   ntlab = new TAC(TAC_LABEL, newLabel, 0, 0);
   ntif->prev = code0;
   ntlab->prev = code1;
 
   return tacJoin(ntif, ntlab);
+}
+
+TAC *makeWhile(TAC *code0, TAC* code1) {
+  Symbol* jumpLabel1 = makeLabel();
+  Symbol* jumpLabel2 = makeLabel();
+  return tacJoin(
+          tacJoin(
+              tacJoin(
+                  tacJoin(
+                      tacJoin(
+                          new TAC(TAC_LABEL, jumpLabel1, 0, 0), code0),
+                      new TAC(TAC_JZ, jumpLabel2, code0 ? code0->res : 0, 0)),
+                  code1),
+              new TAC(TAC_JUMP, jumpLabel1, 0, 0)),
+          new TAC(TAC_LABEL, jumpLabel2, 0, 0));
+}
+
+
+TAC *makeDoWhile(TAC *code0, TAC* code1) {
+  Symbol *jumpLabel = makeLabel();
+  return tacJoin(
+          tacJoin(
+              tacJoin(
+                  new TAC(TAC_LABEL, jumpLabel, 0, 0), code0),
+              code1),
+          new TAC(TAC_JZ, jumpLabel, code1 ? code1->res : 0, 0));
+}
+
+TAC *makeIfThenElse(TAC *code0, TAC *code1, TAC *code2) {
+  TAC *ntiff = 0; // jump TAC
+  TAC *ntlab = 0; // tac label to jump in case if doest not hold 
+
+  Symbol *elseLabel = makeLabel(); // beggin of "else" block
+  Symbol *endOfifLabel = makeLabel(); // end of "if then" block jump
+  TAC *endJumpLabel = new TAC(TAC_LABEL, endOfifLabel, 0, 0);
+
+  ntiff = new TAC(TAC_IFF, elseLabel, code0 ? code0->res : 0, 0); // if false, jump to elseLabel
+  ntlab = new TAC(TAC_LABEL, elseLabel, 0, 0);
+  ntiff->prev = code0; // condition
+  ntlab->prev = code1; // if body
+
+  // if condition holds, at the end of the "if then" we need to jump to after the "else" ends
+  // A good way to do this, is to make the beginning of "else" block have a prev prointer to this jump
+  return tacJoin(
+          tacJoin(
+            ntiff,
+            tacJoin(
+              code1,
+              tacJoin(makeJump(endOfifLabel), tacJoin(new TAC(TAC_LABEL, elseLabel, 0, 0), code2)))),
+          endJumpLabel);
+}
+
+TAC *makeJump(Symbol *label) {
+  return new TAC(TAC_JUMP, label, 0,0);
 }
 
 void tacPrintSingle(TAC *tac) {

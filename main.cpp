@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
   yyparse();
   // printSymbolsTable();
 
-  printAST(head, 0);
+  //printAST(head, 0);
   astWrite(head, yyout);
   check_and_set_declarations(head);
   semantic_check_undeclared();

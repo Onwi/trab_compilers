@@ -1,53 +1,81 @@
-int v = 10;
-int k = 5;
+int a = 0;
+int v = 3;
 
-{
-  k = ~v;  
+int main() {
+
+  while a == 2 do {
+    a = a + 1;
+  }
+
+  do {
+    a = a - 1;
+  } while (a == 0);
 }
 
 
+
+/--
+{
+  if (v < 3) {
+    v=0;
+    k= 1;
+    k = v;  
+  } else {
+    k = 1000;
+    k = 2222;
+  }
+
+  k =  3+3;
+}
+--/
+
 /-- 
 
-TAC(TAC_MOVE, v, temp_2, 0)
-TAC(TAC_ADD, temp_2, k, 1)
 TAC(TAC_MOVE, k, temp_1, 0)
-TAC(TAC_ADD, temp_1, 1, v)
-TAC(TAC_LE, temp_0, 3, 4)
-TAC(TAC_MOVE, k, 5, 0)
-TAC(TAC_MOVE, v, 10, 0)
+TAC(TAC_ADD, temp_1, 3, 3)
+TAC(TAC_LABEL, label_1, 0, 0)
+TAC(TAC_MOVE, k, 2222, 0)
+TAC(TAC_MOVE, k, 1000, 0)
+TAC(TAC_LABEL, label_0, 0, 0)
+TAC(TAC_JUMP, label_1, 0, 0)
+TAC(TAC_MOVE, k, v, 0)
+TAC(TAC_MOVE, k, 1, 0)
+TAC(TAC_MOVE, v, 0, 0)
+TAC(TAC_IFF, label_0, temp_0, 0)
+TAC(TAC_LSR, temp_0, v, 3)
+TAC(TAC_MOVE, v, 3, 0)
+TAC(TAC_MOVE, k, 0, 0)
+
+
+
 
 
 
 AST: AST_PROGRAM,
     AST: AST_DECL,
-        AST: AST_VARIABLES, v
+        AST: AST_VARIABLES, k
             AST: AST_INT,
             AST: AST_SYMBOL_LIT_INT, 0
         AST: AST_DECL,
-            AST: AST_VARIABLES, k
+            AST: AST_VARIABLES, v
                 AST: AST_INT,
-                AST: AST_SYMBOL_LIT_INT, 1
+                AST: AST_SYMBOL_LIT_INT, 3
             AST: AST_DECL,
                 AST: AST_CMDBLK,
                     AST: AST_CMDL,
-                        AST: AST_IF,
-                            AST: AST_LE,
+                        AST: AST_IF_ELSE,
+                            AST: AST_LSR,
+                                AST: AST_SYMBOL_ID, v
                                 AST: AST_LIT,
                                     AST: AST_SYMBOL_LIT_INT, 3
-                                AST: AST_LIT,
-                                    AST: AST_SYMBOL_LIT_INT, 4
                             AST: AST_CMDBLK,
                                 AST: AST_CMDL,
                                     AST: AST_ATTB, k
-                                        AST: AST_ADD,
-                                            AST: AST_LIT,
-                                                AST: AST_SYMBOL_LIT_INT, 1
-                                            AST: AST_SYMBOL_ID, v
-                                    AST: AST_CMDL,
-                                        AST: AST_ATTB, v
-                                            AST: AST_ADD,
-                                                AST: AST_SYMBOL_ID, k
-                                                AST: AST_LIT,
-                                                    AST: AST_SYMBOL_LIT_INT, 1
+                                        AST: AST_SYMBOL_ID, v
+                            AST: AST_CMDBLK,
+                                AST: AST_CMDL,
+                                    AST: AST_ATTB, k
+                                        AST: AST_LIT,
+                                            AST: AST_SYMBOL_LIT_INT, 1
 
 --/
