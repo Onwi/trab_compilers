@@ -1,8 +1,7 @@
-int a=0;
+int a=25;
 int v=3;
 int main(){
-do {
-a=a-1;
-}
-while (a==0);
+print "print this!" "and this!" "here one more mate!";
+read a;
+return 69;
 }

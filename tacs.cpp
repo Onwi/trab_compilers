@@ -5,13 +5,13 @@
 
 std::string TacTypesNames[] = {
   "TAC_UNKNOWN",
-  "TAC_SYMBOL", "TAC_MOVE",
+  "TAC_SYMBOL", "TAC_MOVE", "TAC_VARIABLE",
   // ops
   "TAC_ADD", "TAC_SUB", "TAC_MUL", "TAC_DIV", "TAC_AND", "TAC_OR",
   "TAC_LE", "TAC_GE", "TAC_EQ", "TAC_DIF", "TAC_LSR", "TAC_GTR", "TAC_NOT",
 
   "TAC_LABEL", "TAC_BEGINFUN", "TAC_ENDFUN",
-  "TAC_IFF", "TAC_IFZ", "TAC_JUMP", "TAC_CALL", "TAC_ARG", "TAC_RET",
+  "TAC_IFF", "TAC_IFZ", "TAC_JUMP", "TAC_JZ", "TAC_CALL", "TAC_ARG", "TAC_RET",
   "TAC_PRINT", "TAC_READ",
 };
 
@@ -45,6 +45,7 @@ TAC *generateCode(AST *node) {
     case AST_SYMBOL_LIT_INT:
     case AST_SYMBOL_LIT_REAL:
     case AST_SYMBOL_LIT_CHAR:
+    case AST_STRING:
       result = new TAC(TAC_SYMBOL, node->symbol, 0, 0);
       break;
 
@@ -114,6 +115,71 @@ TAC *generateCode(AST *node) {
     case AST_DO_WHILE:
       result = makeDoWhile(code[0], code[1]);
       break;
+
+  // Functions ---------------------------------------------------------------------
+    case AST_FUNCTION:
+      result = tacJoin(tacJoin(tacJoin(
+                new TAC(TAC_BEGINFUN, node->symbol, 0, 0), 
+                code[1]), 
+                code[2]), 
+                new TAC(TAC_ENDFUN, makeLabel(), 0, 0)
+              );
+      break;
+
+    case AST_FUNCTION_ARGS:
+      result = tacJoin(code[0], code[1]);
+      break;
+
+    case AST_FUNCTION_ARG:
+      result = new TAC(TAC_VARIABLE, node->symbol, code[0] ? code[0]->res : 0, 0);
+      break;
+
+    case AST_SYMBOL_FUNCTION:
+      if(node->child.size()) {
+        result = tacJoin(
+                  code[0], 
+                  new TAC(TAC_CALL, makeTemp(), node->symbol, 0)
+                );
+      } else {
+        result = new TAC(TAC_CALL, node->symbol, 0, 0);
+      }
+      break;
+
+    case AST_SYMBOL_FUNCTION_ARGS:
+      result = tacJoin(
+          tacJoin(code[0], 
+                  new TAC(TAC_ARG, code[0] ? code[0]->res : 0, 0, 0)),
+          code[1]
+        );
+      break;
+
+  // IO ---------------------------------------------------------------------
+    case AST_PRINT:
+      //printf("print code[1] = %s!!!\n", code[1] ? code[1]->res->text.c_str() : "0");
+      result = tacJoin(
+            new TAC(TAC_PRINT, code[0] ? code[0]->res : 0, 0, 0),
+            code[1]
+          );
+      break;
+    case AST_PRINT_REST:
+      //printf("wegotHEREEEE!!!\n");
+      //printf("code[0] = %s!!!\n", code[0] ? code[0]->res->text.c_str() : "0");
+      //printf("code[1] = %s!!!\n", code[1] ? code[1]->res->text.c_str() : "0");
+      result = tacJoin(
+          new TAC(TAC_PRINT, code[0] ? code[0]->res : 0, 0, 0), 
+          code[1]
+        );
+      break;
+
+    case AST_READ:
+      result = new TAC(TAC_READ, node->symbol, 0, 0);
+      break;
+
+  // -----------------------------------------------------------------------
+    case AST_RETURN:
+      result = new TAC(TAC_RET, code[0] ? code[0]->res : 0, 0, 0);
+      break;
+
     default: // return code for all subtrees
        result = tacJoin(
          tacJoin(tacJoin(code[0], code[1]), code[2]),

@@ -1,15 +1,12 @@
-int a = 0;
+int a = 25;
 int v = 3;
 
 int main() {
 
-  while a == 2 do {
-    a = a + 1;
-  }
+  print "print this!" "and this!" "here one more mate!";
+  read a;
 
-  do {
-    a = a - 1;
-  } while (a == 0);
+  return 69;
 }
 
 
