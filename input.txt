@@ -1,15 +1,78 @@
-int a =9;
+int a = 25;
+int v = 3;
 
-int funf(int d, int b) {
-  return b+d;
+int main() {
+
+  print "print this!" "and this!" "here one more mate!";
+  read a;
+
+  return 69;
 }
 
-real r = 2/1;
+
+
+/--
 {
-a = funf(a,a);
-}
+  if (v < 3) {
+    v=0;
+    k= 1;
+    k = v;  
+  } else {
+    k = 1000;
+    k = 2222;
+  }
 
+  k =  3+3;
+}
+--/
 
 /-- 
+
+TAC(TAC_MOVE, k, temp_1, 0)
+TAC(TAC_ADD, temp_1, 3, 3)
+TAC(TAC_LABEL, label_1, 0, 0)
+TAC(TAC_MOVE, k, 2222, 0)
+TAC(TAC_MOVE, k, 1000, 0)
+TAC(TAC_LABEL, label_0, 0, 0)
+TAC(TAC_JUMP, label_1, 0, 0)
+TAC(TAC_MOVE, k, v, 0)
+TAC(TAC_MOVE, k, 1, 0)
+TAC(TAC_MOVE, v, 0, 0)
+TAC(TAC_IFF, label_0, temp_0, 0)
+TAC(TAC_LSR, temp_0, v, 3)
+TAC(TAC_MOVE, v, 3, 0)
+TAC(TAC_MOVE, k, 0, 0)
+
+
+
+
+
+
+AST: AST_PROGRAM,
+    AST: AST_DECL,
+        AST: AST_VARIABLES, k
+            AST: AST_INT,
+            AST: AST_SYMBOL_LIT_INT, 0
+        AST: AST_DECL,
+            AST: AST_VARIABLES, v
+                AST: AST_INT,
+                AST: AST_SYMBOL_LIT_INT, 3
+            AST: AST_DECL,
+                AST: AST_CMDBLK,
+                    AST: AST_CMDL,
+                        AST: AST_IF_ELSE,
+                            AST: AST_LSR,
+                                AST: AST_SYMBOL_ID, v
+                                AST: AST_LIT,
+                                    AST: AST_SYMBOL_LIT_INT, 3
+                            AST: AST_CMDBLK,
+                                AST: AST_CMDL,
+                                    AST: AST_ATTB, k
+                                        AST: AST_SYMBOL_ID, v
+                            AST: AST_CMDBLK,
+                                AST: AST_CMDL,
+                                    AST: AST_ATTB, k
+                                        AST: AST_LIT,
+                                            AST: AST_SYMBOL_LIT_INT, 1
 
 --/

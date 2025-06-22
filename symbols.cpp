@@ -47,6 +47,20 @@ Symbol *insert(int type, std::string text, int dataType) {
   return newSymbol;
 }
 
+Symbol *makeTemp() {
+  static int serialTemp = 0;
+  static char buffer[32];
+  snprintf(buffer, 32, "temp_%d", serialTemp++);
+  return insert(SYMBOL_IDENTIFIER, buffer);
+}
+
+Symbol *makeLabel() {
+  static int serialLabel = 0;
+  static char buffer[32] = "";
+  snprintf(buffer, 32, "label_%d", serialLabel++);
+  return insert(SYMBOL_IDENTIFIER, buffer);
+}
+
 void printSymbolsTable() {
   for (auto s : symbolTable) {
     std::cout << "Symbol: " << s.second->text << ", SymbolType: " << s.second->type << ", dataType: " << s.second->dataType << std::endl;

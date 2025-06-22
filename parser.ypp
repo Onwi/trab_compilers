@@ -6,6 +6,7 @@
 #include "semantic.hpp"
 #include "ast.hpp"
 #include "symbols.hpp"
+#include "tacs.hpp"
 
 using namespace std;
 
