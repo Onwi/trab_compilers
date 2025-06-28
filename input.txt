@@ -6,7 +6,7 @@ int main() {
   print "print this!" "and this!" "here one more mate!";
   read a;
 
-  return 69;
+  return 69 + 1 +2;
 }
 
 

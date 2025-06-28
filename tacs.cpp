@@ -177,7 +177,7 @@ TAC *generateCode(AST *node) {
 
   // -----------------------------------------------------------------------
     case AST_RETURN:
-      result = new TAC(TAC_RET, code[0] ? code[0]->res : 0, 0, 0);
+      result = tacJoin(code[0], new TAC(TAC_RET, code[0] ? code[0]->res : 0, 0, 0));
       break;
 
     default: // return code for all subtrees
