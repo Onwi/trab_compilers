@@ -1,8 +1,10 @@
 #include <cstdio>
 #include <cstdlib>
+#include <fstream>
 #include <map>
 #include <ostream>
 #include <iostream>
+#include <string>
 #include "symbols.hpp"
 
 std::map<std::string, Symbol*> symbolTable;
@@ -66,6 +68,29 @@ void printSymbolsTable() {
     std::cout << "Symbol: " << s.second->text << ", SymbolType: " << s.second->type << ", dataType: " << s.second->dataType << std::endl;
   }
 }
+
+void printAsm(std::ofstream &fout) {
+  fout << ".data\n";
+  int stringCount = 0;
+  for (auto s : symbolTable) {
+    std::string type;
+    switch (s.second->type) {
+      case SYMBOL_LIT_STRING:
+        type = ".string";
+        fout << "_s" + std::to_string(stringCount) + ":\n";
+        fout << "\t" + type + " " + s.second->text + "\n";
+        fout << "\t.text\n";
+        stringCount++;
+        break;
+      case SYMBOL_LIT_INT:
+        type= ".long";
+        fout << "_" + s.second->text + ":\n";
+        fout << "\t" + type + " " + s.second->text + "\n";
+        break;
+    }
+  }
+}
+
 
 int check_undeclared() {
   int undeclared_symbols = 0;

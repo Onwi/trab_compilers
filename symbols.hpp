@@ -1,3 +1,4 @@
+#include <fstream>
 #include <string>
 
 #ifndef SYMBOL_HEADER 
@@ -40,8 +41,8 @@ Symbol *makeTemp();
 Symbol *makeLabel();
 
 void printSymbolsTable();
+void printAsm(std::ofstream &fout);
 int check_undeclared();
-
 int GetNumberParamsFP(FUNC_PARAMS* fp);
 FUNC_PARAMS* GetLastFP(SYMBOL* symb);
 

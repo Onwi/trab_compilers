@@ -38,6 +38,7 @@ TAC *makeJump(Symbol *label);
 TAC *makeWhile(TAC *code0, TAC* code1);
 TAC *makeDoWhile(TAC *code0, TAC* code1);
 TAC *tacHandleExpr(TAC *code0, TAC *code1, TacTypes type);
+TAC *tacReverse(TAC *tac);
 
 void tacPrintSingle(TAC *tac);
 void tacPrintBackwards(TAC *tac);

@@ -5,6 +5,7 @@
 #include "semantic.hpp"
 #include "symbols.hpp"
 #include "tacs.hpp"
+#include "asm.hpp"
 
 int yylex();
 int yyparse();
@@ -39,7 +40,7 @@ int main(int argc, char **argv) {
   initMe();
 
   yyparse();
-  // printSymbolsTable();
+  printSymbolsTable();
 
   //printAST(head, 0);
   astWrite(head, yyout);
@@ -49,6 +50,11 @@ int main(int argc, char **argv) {
 
   TAC *tacs = generateCode(head);
   tacPrintBackwards(tacs);
+  TAC *t = tacReverse(tacs);
+  // printf("\n");
+  // for(; t; t = t->next)
+  //   tacPrintSingle(t);
+  generateASM(t);
 
   if (SemanticErrors == 0) {
     printf("Compilation was succesfull!!\n");

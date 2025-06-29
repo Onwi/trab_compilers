@@ -155,16 +155,12 @@ TAC *generateCode(AST *node) {
 
   // IO ---------------------------------------------------------------------
     case AST_PRINT:
-      //printf("print code[1] = %s!!!\n", code[1] ? code[1]->res->text.c_str() : "0");
       result = tacJoin(
             new TAC(TAC_PRINT, code[0] ? code[0]->res : 0, 0, 0),
             code[1]
           );
       break;
     case AST_PRINT_REST:
-      //printf("wegotHEREEEE!!!\n");
-      //printf("code[0] = %s!!!\n", code[0] ? code[0]->res->text.c_str() : "0");
-      //printf("code[1] = %s!!!\n", code[1] ? code[1]->res->text.c_str() : "0");
       result = tacJoin(
           new TAC(TAC_PRINT, code[0] ? code[0]->res : 0, 0, 0), 
           code[1]
@@ -283,5 +279,15 @@ void tacPrintBackwards(TAC *tac) {
 
   for (; tac; tac = tac->prev)
     tacPrintSingle(tac);
+}
+
+TAC *tacReverse(TAC *tac) {
+  if (!tac) return NULL;
+
+  TAC *t;
+  for (t = tac; t->prev; t = t->prev) {
+    t->prev->next = t;
+  }
+  return t;
 }
 
