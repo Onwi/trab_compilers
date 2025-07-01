@@ -1,7 +1,7 @@
 int ab=101;
 int main(){
-print "print this!";
-print "ahoooo!";
-print "wasup!";
+print "print this!\n";
+print "ahoooo!\n";
+print ab;
 return 69;
 }

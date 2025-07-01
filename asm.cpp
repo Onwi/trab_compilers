@@ -7,6 +7,7 @@
 void generateASM(TAC *head) {
   int TAC_PRINT_count = 0;
   int lit_string_print = 0;
+  int int_to_string = 0;
   std::ofstream fout("res.s");
 
   // init
@@ -59,11 +60,20 @@ void generateASM(TAC *head) {
             "\tcall	printf@PLT\n"
           ;
           lit_string_print++;
+        } else if (tac->res->type == SYMBOL_LIT_INT) {
+          fout <<
+            "\tmovl $"+tac->res->text+", %esi\n"
+            "\tleaq	.LC0(%rip), %rax\n"
+            "\tmovq	%rax, %rdi\n"
+            "\tmovl	$0, %eax\n"
+            "\tcall	printf@PLT\n"
+          ;
         } else {
           fout <<
             "\tmovl	_"+tac->res->text+"(%rip), %eax\n"
             "\tmovl	%eax, %esi\n"
-            "\tleaq	_"+tac->res->text+"(%rip), %rax\n"
+            // only suporting int rn
+            "\tleaq	.LC0(%rip), %rax\n"
             "\tmovq	%rax, %rdi\n"
             "\tmovl	$0, %eax\n"
             "\tcall	printf@PLT\n"

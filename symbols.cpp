@@ -71,8 +71,11 @@ void printSymbolsTable() {
 
 void printAsm(std::ofstream &fout) {
   fout << ".data\n";
+  fout << ".LC0:\n";
+  fout << "\t.string \"%d\\n\"\n";
   int stringCount = 0;
   for (auto s : symbolTable) {
+    //printf("lolol:%s\n", s.second->text.c_str());
     std::string type;
     switch (s.second->type) {
       case SYMBOL_LIT_STRING:
