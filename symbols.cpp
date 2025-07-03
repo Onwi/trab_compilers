@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
@@ -6,6 +7,7 @@
 #include <iostream>
 #include <string>
 #include "symbols.hpp"
+#include "tacs.hpp"
 
 std::map<std::string, Symbol*> symbolTable;
 
@@ -69,7 +71,7 @@ void printSymbolsTable() {
   }
 }
 
-void printAsm(std::ofstream &fout) {
+void printAsm(std::ofstream &fout, TAC* head) {
   fout << ".data\n";
   fout << ".LC0:\n";
   fout << "\t.string \"%d\\n\"\n";
@@ -90,6 +92,15 @@ void printAsm(std::ofstream &fout) {
         fout << "_" + s.second->text + ":\n";
         fout << "\t" + type + " " + s.second->text + "\n";
         break;
+    }
+  }
+
+  TAC *aux;
+  for (aux = head; aux; aux = aux->next) {
+    if (aux->type == TAC_MOVE && aux->op1 != NULL) {
+        std::string type= ".long";
+        fout << "_" + aux->res->text + ":\n";
+        fout << "\t" + type + " " + aux->op1->text + "\n";
     }
   }
 }

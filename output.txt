@@ -1,7 +1,18 @@
 int ab=101;
+int lol=111;
+int gal=99;
+int funRes=0;
+int myInt(int a, int b){
+print "eae!";
+return 20;
+}
 int main(){
 print "print this!\n";
 print "ahoooo!\n";
 print ab;
+print lol;
+print gal;
+funRes=myInt(10, 20);
+print funRes;
 return 69;
 }

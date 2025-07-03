@@ -40,8 +40,9 @@ Symbol *insert(int type, std::string text, int dataType=JUST_FOR_SKIP);
 Symbol *makeTemp();
 Symbol *makeLabel();
 
+struct TAC;
 void printSymbolsTable();
-void printAsm(std::ofstream &fout);
+void printAsm(std::ofstream &fout, TAC *head);
 int check_undeclared();
 int GetNumberParamsFP(FUNC_PARAMS* fp);
 FUNC_PARAMS* GetLastFP(SYMBOL* symb);
