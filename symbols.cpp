@@ -1,9 +1,13 @@
+#include <cstddef>
 #include <cstdio>
 #include <cstdlib>
+#include <fstream>
 #include <map>
 #include <ostream>
 #include <iostream>
+#include <string>
 #include "symbols.hpp"
+#include "tacs.hpp"
 
 std::map<std::string, Symbol*> symbolTable;
 
@@ -66,6 +70,41 @@ void printSymbolsTable() {
     std::cout << "Symbol: " << s.second->text << ", SymbolType: " << s.second->type << ", dataType: " << s.second->dataType << std::endl;
   }
 }
+
+void printAsm(std::ofstream &fout, TAC* head) {
+  fout << ".data\n";
+  fout << ".LC0:\n";
+  fout << "\t.string \"%d\\n\"\n";
+  int stringCount = 0;
+  for (auto s : symbolTable) {
+    //printf("lolol:%s\n", s.second->text.c_str());
+    std::string type;
+    switch (s.second->type) {
+      case SYMBOL_LIT_STRING:
+        type = ".string";
+        fout << "_s" + std::to_string(stringCount) + ":\n";
+        fout << "\t" + type + " " + s.second->text + "\n";
+        fout << "\t.text\n";
+        stringCount++;
+        break;
+      case SYMBOL_LIT_INT:
+        type= ".long";
+        fout << "_" + s.second->text + ":\n";
+        fout << "\t" + type + " " + s.second->text + "\n";
+        break;
+    }
+  }
+
+  TAC *aux;
+  for (aux = head; aux; aux = aux->next) {
+    if (aux->type == TAC_MOVE && aux->op1 != NULL) {
+        std::string type= ".long";
+        fout << "_" + aux->res->text + ":\n";
+        fout << "\t" + type + " " + aux->op1->text + "\n";
+    }
+  }
+}
+
 
 int check_undeclared() {
   int undeclared_symbols = 0;
